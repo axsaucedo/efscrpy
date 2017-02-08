@@ -5,7 +5,7 @@ This repo contains a small script that gets info from the ef portal into a csv f
 
 To use just run it as:
 
-``` python
+``` bash
     ./ef.py --username "YOURUSERNAME" --password "YOURPASSWORD"
 ```
 
