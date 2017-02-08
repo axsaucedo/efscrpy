@@ -1,3 +1,6 @@
 .DS_Store
 venv
 chromedriver
+__pycache__/
+honey_badgers.csv
+ghostdriver.log
