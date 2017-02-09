@@ -108,6 +108,7 @@ def __get_hbs(driver, waiting_time):
 			"first_name": full_name.text.split()[0],
 			"last_name": " ".join(full_name.text.split()[1:]),
 			"email": email_elm.text,
+			"edge": edge_elm.text,
 			"type": type_elm.text,
 			"skills": sorted([l.text for l in skills_elms], key=str.lower),
 			"questions": [q.text for q in question_elms]
@@ -138,6 +139,7 @@ def __save_to_csv(honey_badgers):
 	    		"first_name",
 	    		"last_name",
 	    		"email",
+	    		"edge",
 	    		"skills",
 	    		"q1",
 	    		"q2",
@@ -153,6 +155,7 @@ def __save_to_csv(honey_badgers):
 	    		hb["first_name"],
 	    		hb["last_name"],
 	    		hb["email"],
+	    		hb["edge"],
 	    		"|".join(hb["skills"]),
 	    	]
 
