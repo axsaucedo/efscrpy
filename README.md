@@ -17,6 +17,10 @@ Remember to install requirements with:
     pip install -r requirements.txt
 ```
 
+## Chrome Webdriver
+
+If you get an error with PhantomJS, with a message like "Screenshot: available via screen" make sure you install it. Alternatively you can just run it using the Chrome webdriver as outlined below.
+
 In order to run you need to have Node and PhantomJS, or you need to download the chromedriver and specify the path with the --chrome flag:
 
 ``` bash

@@ -148,16 +148,16 @@ def __save_to_csv(honey_badgers):
 	    rows = []
 
 	    header_row = [
-	    		"first_name",
-	    		"last_name",
-	    		"email",
-	    		"picture",
-	    		"edge",
-	    		"skills",
-	    		"q1",
-	    		"q2",
-	    		"q3",
-	    		"q4"
+	    		"First name",
+	    		"Last name",
+	    		"Email",
+	    		"Picture",
+	    		"Edge",
+	    		"Skills",
+	    		"Q1",
+	    		"Q2",
+	    		"Q3",
+	    		"Q4"
 	    	]
 
 	    rows.append(header_row)
