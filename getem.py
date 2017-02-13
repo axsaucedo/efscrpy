@@ -64,7 +64,6 @@ def __get_hbs(driver, waiting_time):
 	num_hbs = len(driver.find_elements_by_class_name("thumbnail"))
 
 	for idx in range(num_hbs):
-		print("Number", idx, "out of", num_hbs)
 
 		# Need to refresh items as we do a full page refresh
 		honey_badger_items = driver.find_elements_by_class_name("cohort-members-grid-item")
@@ -89,6 +88,7 @@ def __get_hbs(driver, waiting_time):
 			else:
 				# All good, it was just your own profile
 				# So we just skip this one...
+				print("Skipping your profile...")
 				driver.execute_script("window.history.go(-1)")
 				honey_badger_items = WebDriverWait(driver, waiting_time).until(
 				    EC.element_to_be_clickable((By.XPATH, '//*[@id="cohort-member-view-incomplete-profile-a6a6d532-38ed-4b2d-9888-94f07badc772"]'))
@@ -103,17 +103,27 @@ def __get_hbs(driver, waiting_time):
 		type_elm = driver.find_element_by_xpath('//*[@id="cohort-member-page"]/div[2]/div/div[2]/div[2]/div[1]/div[2]/h5')
 		skills_elms = driver.find_elements_by_class_name("label")
 		question_elms = driver.find_elements_by_class_name("answer")
+		img_elem = None
 		
+		try:
+			img_elem = driver.find_element_by_xpath('//*[@id="cohort-member-page"]/div[2]/div/div[2]/div[1]/div/div/img')
+		except:
+			# User has not updated profile
+			pass
+
 		honey_badger = {
 			"first_name": full_name.text.split()[0],
 			"last_name": " ".join(full_name.text.split()[1:]),
 			"email": email_elm.text,
+			"picture": img_elem.get_attribute("src") if img_elem else None,
 			"edge": edge_elm.text,
 			"type": type_elm.text,
 			"skills": sorted([l.text for l in skills_elms], key=str.lower),
 			"questions": [q.text for q in question_elms]
 		}
 		honey_badgers.append(honey_badger)
+
+		print("Done", idx+1, "out of", num_hbs, ":", honey_badger["first_name"], honey_badger["last_name"])
 
 		# Return to previous window
 		driver.execute_script("window.history.go(-1)")
@@ -129,6 +139,8 @@ def __get_hbs(driver, waiting_time):
 
 def __save_to_csv(honey_badgers):
 
+	print("Saving to honey_badgers.csv.")
+
 	with open('honey_badgers.csv', 'w', newline='') as fp:
 	    
 	    a = csv.writer(fp, delimiter=',') # we need tab delimiter as skills have commas
@@ -139,6 +151,7 @@ def __save_to_csv(honey_badgers):
 	    		"first_name",
 	    		"last_name",
 	    		"email",
+	    		"picture",
 	    		"edge",
 	    		"skills",
 	    		"q1",
@@ -151,17 +164,23 @@ def __save_to_csv(honey_badgers):
 
 	    for hb in honey_badgers:
 
+	    	# This is the picture that can be displayed in google sheets
+	    	pic_txt = ""
+	    	if hb["picture"]:
+	    		pict_txt = '=IMAGE("' + hb["picture"] + '", 4, 100, 100)'
+
 	    	values = [
 	    		hb["first_name"],
 	    		hb["last_name"],
 	    		hb["email"],
+	    		pict_txt,
 	    		hb["edge"],
 	    		"|".join(hb["skills"]),
 	    	]
 
 	    	if len(hb["questions"]):
 	    		for q in hb["questions"]:
-	    			# Quickfix for ’ into '
+	    			# Quickfix to change for ’ into '
 	    			values.append(q.replace("’", "'"))
 
 	    	rows.append(values)
