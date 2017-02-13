@@ -3,6 +3,8 @@
 
 This repo contains a small script that gets info from the ef portal into a csv file.
 
+It builds a CSV with names, emails, pictures, questions, etc.
+
 The recommended way to run is:
 
 ``` bash
