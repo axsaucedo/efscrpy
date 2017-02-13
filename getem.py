@@ -67,7 +67,7 @@ def __do_login(driver, username, password, waiting_time):
 	WebDriverWait(driver, waiting_time).until(__wait_until_cohort_main_screen_loaded)
 	# Quickfix to wait until all elements are rendered
 	# TODO: Replace sleep with proper check
-	time.sleep(1)
+	time.sleep(5)
 
 
 def __get_hbs(driver, waiting_time):
@@ -131,7 +131,7 @@ def __get_hbs(driver, waiting_time):
 			"last_name": " ".join(full_name.text.split()[1:]),
 			"email": email_elm.text,
 			"picture": img_elem.get_attribute("src") if img_elem else "",
-			"edge": edge_elm.text,
+			"edge": edge_elm.text.split()[0],
 			"type": type_elm.text,
 			"skills": sorted([l.text for l in skills_elms], key=str.lower),
 			"questions": [q.text for q in question_elms]
@@ -160,21 +160,6 @@ def __save_to_csv(honey_badgers):
 	    
 	    rows = []
 
-	    header_row = [
-	    		"First name",
-	    		"Last name",
-	    		"Email",
-	    		"Picture",
-	    		"Edge",
-	    		"Skills",
-	    		"Q1",
-	    		"Q2",
-	    		"Q3",
-	    		"Q4"
-	    	]
-
-	    rows.append(header_row)
-
 	    for hb in honey_badgers:
 
 	    	values = [
@@ -195,6 +180,21 @@ def __save_to_csv(honey_badgers):
 
 	    # Sort all rows alphabetically by email to ensure that everything always stays in order
 	    rows.sort(key=lambda x: x[2].lower())
+
+	    header_row = [
+	    		"First name",
+	    		"Last name",
+	    		"Email",
+	    		"Picture",
+	    		"Edge",
+	    		"Skills",
+	    		"Q1",
+	    		"Q2",
+	    		"Q3",
+	    		"Q4"
+	    	]
+	    	
+	    rows.insert(0, header_row)
 
 	    a.writerows(rows)
 
