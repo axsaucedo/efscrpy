@@ -2,6 +2,7 @@
 import os
 import csv
 import argparse
+import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -9,6 +10,20 @@ from selenium.webdriver.support import expected_conditions as EC
 
 # # Programme global variables
 efsite = "https://programme.joinef.com/#/cohort/d5622818-30c7-4b6b-90d2-cc276a5fb9f1/members?"
+MIN_BADGERS = 70
+
+def __wait_until_cohort_main_screen_loaded(driver):
+	"""
+		Helper function to wait until all profile containers load
+		in the main screen. This function is passed to the 
+		expected_conditions (EC) waiting method
+	"""
+
+	thumbs = driver.find_elements_by_class_name("bookmark-button")
+	if len(thumbs) > MIN_BADGERS:
+		return True
+
+	return False
 
 def __close(driver):
 	driver.close()
@@ -49,10 +64,10 @@ def __do_login(driver, username, password, waiting_time):
 	login_button[0].click()
 
 	# Waiting until page loads
-	WebDriverWait(driver, waiting_time).until(
-	    EC.element_to_be_clickable((By.XPATH, '//*[@id="cohort-member-view-incomplete-profile-a6a6d532-38ed-4b2d-9888-94f07badc772"]'))
-	)
-
+	WebDriverWait(driver, waiting_time).until(__wait_until_cohort_main_screen_loaded)
+	# Quickfix to wait until all elements are rendered
+	# TODO: Replace sleep with proper check
+	time.sleep(1)
 
 
 def __get_hbs(driver, waiting_time):
@@ -115,7 +130,7 @@ def __get_hbs(driver, waiting_time):
 			"first_name": full_name.text.split()[0],
 			"last_name": " ".join(full_name.text.split()[1:]),
 			"email": email_elm.text,
-			"picture": img_elem.get_attribute("src") if img_elem else None,
+			"picture": img_elem.get_attribute("src") if img_elem else "",
 			"edge": edge_elm.text,
 			"type": type_elm.text,
 			"skills": sorted([l.text for l in skills_elms], key=str.lower),
@@ -129,9 +144,7 @@ def __get_hbs(driver, waiting_time):
 		driver.execute_script("window.history.go(-1)")
 
 		# Wait until previous menu loads
-		honey_badger_items = WebDriverWait(driver, waiting_time).until(
-		    EC.element_to_be_clickable((By.XPATH, '//*[@id="cohort-member-view-incomplete-profile-a6a6d532-38ed-4b2d-9888-94f07badc772"]'))
-		)
+		honey_badger_items = WebDriverWait(driver, waiting_time).until(__wait_until_cohort_main_screen_loaded)
 
 	return honey_badgers
 
@@ -164,16 +177,11 @@ def __save_to_csv(honey_badgers):
 
 	    for hb in honey_badgers:
 
-	    	# This is the picture that can be displayed in google sheets
-	    	pic_txt = ""
-	    	if hb["picture"]:
-	    		pict_txt = '=IMAGE("' + hb["picture"] + '", 4, 100, 100)'
-
 	    	values = [
 	    		hb["first_name"],
 	    		hb["last_name"],
 	    		hb["email"],
-	    		pict_txt,
+	    		hb["picture"],
 	    		hb["edge"],
 	    		"|".join(hb["skills"]),
 	    	]
@@ -184,6 +192,9 @@ def __save_to_csv(honey_badgers):
 	    			values.append(q.replace("’", "'"))
 
 	    	rows.append(values)
+
+	    # Sort all rows alphabetically by email to ensure that everything always stays in order
+	    rows.sort(key=lambda x: x[2].lower())
 
 	    a.writerows(rows)
 
