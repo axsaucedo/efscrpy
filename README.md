@@ -5,16 +5,22 @@ This repo contains a small script that gets info from the ef portal into a csv f
 
 It builds a CSV with names, emails, pictures, questions, etc.
 
+Requirements:
+
+* Python 3.7
+* Selenium
+* PhantomJS or ChromeWebDriver
+
 The recommended way to run is:
 
 ``` bash
-    python efscra.py --username "USERNAME" --password "PASSWORD"
+    python3.7 efscra.py --username "USERNAME" --password "PASSWORD"
 ```
 
 Remember to install requirements with:
 
 ``` bash
-    pip install -r requirements.txt
+    pip3 install -r requirements.txt
 ```
 
 ## Chrome Webdriver
