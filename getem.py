@@ -1,7 +1,6 @@
 
 import os
 import csv
-import argparse
 import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -15,7 +14,7 @@ MIN_BADGERS = 70
 def __wait_until_cohort_main_screen_loaded(driver):
 	"""
 		Helper function to wait until all profile containers load
-		in the main screen. This function is passed to the 
+		in the main screen. This function is passed to the
 		expected_conditions (EC) waiting method
 	"""
 
@@ -29,7 +28,7 @@ def __close(driver):
 	driver.close()
 
 def __setup(chrome_driver):
-	
+
 	driver = None
 
 	if chrome_driver:
@@ -53,7 +52,7 @@ def __do_login(driver, username, password, waiting_time):
 	username_input = WebDriverWait(driver, waiting_time).until(
 	        EC.presence_of_element_located((By.ID, "a0-signin_easy_email"))
 	    )
-	# Getting elements 
+	# Getting elements
 	username_input = driver.find_element_by_id("a0-signin_easy_email")
 	passowrd_input = driver.find_element_by_id("a0-signin_easy_password")
 	login_button = driver.find_elements_by_class_name("a0-next")
@@ -89,14 +88,14 @@ def __get_hbs(driver, waiting_time):
 
 		# Wait until profile loads
 		try:
-			honey_badger_button = WebDriverWait(driver, waiting_time).until(
+			WebDriverWait(driver, waiting_time).until(
 			    EC.element_to_be_clickable((By.ID, "cohort-member-favourite-profile"))
 			)
 		except:
 			# Check if this is not my own profile...
 			# If it, just keep going
 			try:
-				my_own = driver.find_element_by_id("cohort-member-edit-profile")
+				driver.find_element_by_id("cohort-member-edit-profile")
 			except Exception as exc:
 				# Nope, it's just not working
 				raise(exc)
@@ -119,7 +118,7 @@ def __get_hbs(driver, waiting_time):
 		skills_elms = driver.find_elements_by_class_name("label")
 		question_elms = driver.find_elements_by_class_name("answer")
 		img_elem = None
-		
+
 		try:
 			img_elem = driver.find_element_by_xpath('//*[@id="cohort-member-page"]/div[2]/div/div[2]/div[1]/div/div/img')
 		except:
@@ -155,9 +154,9 @@ def __save_to_csv(honey_badgers):
 	print("Saving to honey_badgers.csv.")
 
 	with open('honey_badgers.csv', 'w', newline='') as fp:
-	    
+
 	    a = csv.writer(fp, delimiter=',') # we need tab delimiter as skills have commas
-	    
+
 	    rows = []
 
 	    for hb in honey_badgers:
@@ -193,7 +192,7 @@ def __save_to_csv(honey_badgers):
 	    		"Q3",
 	    		"Q4"
 	    	]
-	    	
+
 	    rows.insert(0, header_row)
 
 	    a.writerows(rows)
